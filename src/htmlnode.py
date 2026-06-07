@@ -35,11 +35,11 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
-         super().__init__(tag, value, props)
+         super().__init__(tag, value, None, props)
 
     def to_html(self):
         if self.value == None:
-            raise ValueError
+            raise ValueError("No content found")
         if self.tag == None:
             return str(self.value)
         
@@ -47,3 +47,20 @@ class LeafNode(HTMLNode):
     
     def __repr__(self):
          print(f'HTMLNode({self.tag}, {self.value}, {self.props})')
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+         super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if self.tag == None:
+            raise ValueError("HTML tag required")
+        if self.children == None:
+            raise ValueError("No child nodes")
+        html_str = f'<{self.tag}>'
+
+#Iterate over children and add them in between parent's HTML tag
+        for child in self.children:
+            html_str += child.to_html()
+        html_str += f'</{self.tag}>'
+        return html_str
