@@ -6,6 +6,8 @@ class TestHTMLNode(unittest.TestCase):
         htmlnode = HTMLNode("p", "This is a value text")
         htmlnode2 = HTMLNode("p", "This is a value text")
         self.assertEqual(htmlnode, htmlnode2)
+
+    def test_eq_none_values(self):
         htmlnode5 = HTMLNode("p", "This is a value text")
         htmlnode6 = HTMLNode("p", "This is a value text", None, None)
         self.assertEqual(htmlnode5, htmlnode6)
@@ -26,6 +28,8 @@ class TestHTMLNode(unittest.TestCase):
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_to_html_p_w_link(self):
         node2 = LeafNode("a", "Hello, world!", {"href": "google.de"})
         self.assertEqual(node2.to_html(), "<a>Hello, world!</a>")
 
@@ -42,6 +46,17 @@ class TestHTMLNode(unittest.TestCase):
             parent_node.to_html(),
             "<div><span><b>grandchild</b></span></div>",
         )
+
+    def test_to_html_with_greatgrandchildren(self):
+        greatgrandchild_node = LeafNode("i", "greatgrandchild")
+        grandchild_node = ParentNode("b", [greatgrandchild_node])
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><b><i>greatgrandchild</i></b></span></div>",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
