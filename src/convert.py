@@ -90,7 +90,7 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
                 raise Exception('Invalid Markdown syntax. All one or more links do not have a URL')
             if segments[0] != '':
                 new_nodes.append(TextNode(segments[0], TextType.PLAIN))
-            new_nodes.append(TextNode(link[0], TextType.IMAGE, link[1]))
+            new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
         if segments[-1] != '':
             new_nodes.append(TextNode(segments[-1], TextType.PLAIN))
         result_nodes.extend(new_nodes)

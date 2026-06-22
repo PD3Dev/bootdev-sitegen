@@ -107,5 +107,63 @@ class TestDelimiterSplit(unittest.TestCase):
         with self.assertRaises(Exception):
             split_nodes_image([node])
 
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a [link](https://i.imgur.com/zjjcJKZ) and another [second link](https://i.imgur.com/3elNhQu)",
+            TextType.PLAIN,
+    )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+        [
+            TextNode("This is text with a ", TextType.PLAIN),
+            TextNode("link", TextType.LINK, "https://i.imgur.com/zjjcJKZ"),
+            TextNode(" and another ", TextType.PLAIN),
+            TextNode(
+                "second link", TextType.LINK, "https://i.imgur.com/3elNhQu"
+            ),
+        ],
+        new_nodes,
+    )
+
+    def test_split_links_no_plain_text(self):
+        node = TextNode(
+            "[link](https://i.imgur.com/zjjcJKZ)[second link](https://i.imgur.com/3elNhQu)",
+            TextType.PLAIN,
+    )
+        new_nodes = split_nodes_link([node])
+        self.assertListEqual(
+        [
+            TextNode("link", TextType.LINK, "https://i.imgur.com/zjjcJKZ"),
+            TextNode(
+                "second link", TextType.LINK, "https://i.imgur.com/3elNhQu"
+            ),
+        ],
+        new_nodes,
+    )
+
+    def test_split_3_links(self):
+        node = TextNode(
+            "This is text with a [link](https://i.imgur.com/zjjcJKZ) and another [second link](https://i.imgur.com/3elNhQu)",
+            TextType.PLAIN,
+    )
+        node2 = TextNode(
+            "And a second node with a [third link](https://google.de)",
+            TextType.PLAIN,
+    )
+        new_nodes = split_nodes_link([node, node2])
+        self.assertListEqual(
+        [
+            TextNode("This is text with a ", TextType.PLAIN),
+            TextNode("link", TextType.LINK, "https://i.imgur.com/zjjcJKZ"),
+            TextNode(" and another ", TextType.PLAIN),
+            TextNode(
+                "second link", TextType.LINK, "https://i.imgur.com/3elNhQu"
+            ),
+            TextNode("And a second node with a ", TextType.PLAIN),
+            TextNode("third link", TextType.LINK, "https://google.de"),
+        ],
+        new_nodes,
+    )
+
 if __name__ == "__main__":
     unittest.main()
