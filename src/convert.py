@@ -32,7 +32,7 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
 
 def extract_markdown_images(text):
     alt_text = re.findall(r"\!\[(.*?)\]", text)
-    img_url = re.findall(r"\((.*?)\)", text)
+    img_url = re.findall(r"\!\[.*?\]\((.*?)\)", text)
     images = []
     if len(alt_text) != len(img_url):
         raise Exception('Image Markup syntax invalid. Check alt text link combinations.')
@@ -42,7 +42,7 @@ def extract_markdown_images(text):
 
 def extract_markdown_links(text):
     anchor_text = re.findall(r"\[(.*?)\]", text)
-    link_url = re.findall(r"\((.*?)\)", text)
+    link_url = re.findall(r"\[.*?\]\((.*?)\)", text)
     links = []
     if len(anchor_text) != len(link_url):
         raise Exception('Link Markup syntax invalid. Check alt text link combinations.')
@@ -54,10 +54,10 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
     result_nodes = []
 
     for node in old_nodes:
-        images = extract_markdown_images(node.text)
-        if len(images) == 0:
-            result_nodes.append(TextNode(node.text, TextType.PLAIN))
+        if node.text_type != TextType.PLAIN:
+            result_nodes.append(node)
             continue
+        images = extract_markdown_images(node.text)
         new_nodes = []
         segments = [node.text]
         for image in images:
@@ -78,10 +78,10 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
     result_nodes = []
 
     for node in old_nodes:
-        links = extract_markdown_links(node.text)
-        if len(links) == 0:
-            result_nodes.append(TextNode(node.text, TextType.PLAIN))
+        if node.text_type != TextType.PLAIN:
+            result_nodes.append(node)
             continue
+        links = extract_markdown_links(node.text)
         new_nodes = []
         segments = [node.text]
         for link in links:

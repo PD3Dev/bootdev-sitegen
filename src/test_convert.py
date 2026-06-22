@@ -165,6 +165,33 @@ class TestDelimiterSplit(unittest.TestCase):
         new_nodes,
     )
 
+    def test_text_to_textnode(self):
+        text = "This is a text with **bold** text, an ![image](https://boot.dev/test.png) and some _italic_. And here is some `code` and a [link](https://google.de)"
+
+        text_nodes = text_to_textnodes(text)
+
+        check = [
+            TextNode('This is a text with ', TextType.PLAIN),
+            TextNode('bold', TextType.BOLD),
+            TextNode(' text, an ', TextType.PLAIN),
+            TextNode('image', TextType.IMAGE, 'https://boot.dev/test.png'),
+            TextNode(' and some ', TextType.PLAIN),
+            TextNode('italic', TextType.ITALIC),
+            TextNode('. And here is some ', TextType.PLAIN),
+            TextNode('code', TextType.CODE),
+            TextNode(' and a ', TextType.PLAIN),
+            TextNode('link', TextType.LINK, 'https://google.de')
+        ]
+
+        self.assertEqual(text_nodes, check)
+
+    def test_text_to_textnode_no_url(self):
+        text = """
+            This is a text with **bold** text, an ![image]() 
+            and some _italic_. And here is some `code` and a [link](https://google.de)
+            """
+        with self.assertRaises(Exception):
+            text_to_textnodes(text)
 
 
 if __name__ == "__main__":
