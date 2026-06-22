@@ -98,5 +98,14 @@ class TestDelimiterSplit(unittest.TestCase):
         new_nodes,
     )
 
+    def test_split_images_missing_url(self):
+        node = TextNode(
+            "This should be a text with an ![image]() but the URL is missing.",
+            TextType.PLAIN
+        )
+
+        with self.assertRaises(Exception):
+            split_nodes_image([node])
+
 if __name__ == "__main__":
     unittest.main()

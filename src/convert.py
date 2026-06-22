@@ -31,7 +31,7 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
     return result_nodes
 
 def extract_markdown_images(text):
-    alt_text = re.findall(r"\[(.*?)\]", text)
+    alt_text = re.findall(r"\!\[(.*?)\]", text)
     img_url = re.findall(r"\((.*?)\)", text)
     images = []
     if len(alt_text) != len(img_url):
@@ -55,8 +55,22 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
 
     for node in old_nodes:
         images = extract_markdown_images(node.text)
+        if len(images) == 0:
+            result_nodes.append(TextNode(node.text, TextType.PLAIN))
+            continue
+        new_nodes = []
+        segments = [node.text]
         for image in images:
-            result_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
+            if image[1] == '':
+                raise Exception('Invalid Markdown syntax. All one or more images do not have a URL')
+            segments = segments[-1].split(f'![{image[0]}]({image[1]})', 1)
+            if segments[0] != '':
+                new_nodes.append(TextNode(segments[0], TextType.PLAIN))
+            new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
+        if segments[-1] != '':
+            new_nodes.append(TextNode(segments[-1], TextType.PLAIN))
+        result_nodes.extend(new_nodes)
+
 
     return result_nodes
 
@@ -65,7 +79,21 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
 
     for node in old_nodes:
         links = extract_markdown_links(node.text)
+        if len(links) == 0:
+            result_nodes.append(TextNode(node.text, TextType.PLAIN))
+            continue
+        new_nodes = []
+        segments = [node.text]
         for link in links:
-            result_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
+            segments = segments[-1].split(f'[{link[0]}]({link[1]})', 1)
+            if link[1] == '':
+                raise Exception('Invalid Markdown syntax. All one or more links do not have a URL')
+            if segments[0] != '':
+                new_nodes.append(TextNode(segments[0], TextType.PLAIN))
+            new_nodes.append(TextNode(link[0], TextType.IMAGE, link[1]))
+        if segments[-1] != '':
+            new_nodes.append(TextNode(segments[-1], TextType.PLAIN))
+        result_nodes.extend(new_nodes)
 
     return result_nodes
+
