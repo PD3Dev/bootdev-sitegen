@@ -107,3 +107,12 @@ def text_to_textnodes(text):
     links = split_nodes_link(images)
 
     return links
+
+def markdown_to_blocks(markdown):
+    segments = markdown.split('\n\n')
+    result = []
+    for i in range(len(segments)):
+        segments[i] = segments[i].strip()
+        if segments[i] != '':
+            result.append(segments[i])
+    return result
