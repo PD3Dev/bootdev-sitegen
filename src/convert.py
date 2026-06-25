@@ -133,12 +133,18 @@ def get_heading_tag(heading):
     if heading.startswith('###### '):
         return 'h6'
 
-def block_to_parent_node(md_block):
+def heading_to_parent_node(md_heading):
     pass
 
 
-def text_to_child_node(text):
-    pass
+def text_to_children(text):
+    tn_children = text_to_textnodes(text)
+    html_children = []
+
+    for tn in tn_children:
+        child = text_node_to_html_node(tn)
+        html_children.append(child)
+    return html_children
 
 def markdown_to_html_node(markdown):
     md_blocks = markdown_to_blocks(markdown)
