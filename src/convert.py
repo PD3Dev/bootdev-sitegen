@@ -118,30 +118,6 @@ def markdown_to_blocks(markdown):
             result.append(segments[i])
     return result
 
-def block_to_leaf_node(markdown_block):
-    type = block_to_block_type(markdown_block)
-#Check through types and create corresponding node.
-    if type == BlockType.HEADING:
-        tag = get_heading_tag(markdown_block)
-        return LeafNode(tag, markdown_block)
-    if type == BlockType.CODE:
-        return LeafNode('pre', f'<code>{markdown_block}</code>')
-    if type == BlockType.QUOTE:
-        return LeafNode('blockquote', markdown_block)
-    if type == BlockType.PARAGRAPH:
-        return LeafNode('p', markdown_block)
-    if type == BlockType.ORDERED_LIST:
-        items = markdown_block.split('\n')
-        content = ''
-        for item in items:
-            content += f'<li>{item}</li>'
-        return LeafNode('ol', content)
-    if type == BlockType.UNORDERED_LIST:
-        items = markdown_block.split('\n')
-        content = ''
-        for item in items:
-            content += f'<li>{item}</li>'
-        return LeafNode('ul', content)
 
 def get_heading_tag(heading):
     if heading.startswith('# '):
@@ -157,12 +133,8 @@ def get_heading_tag(heading):
     if heading.startswith('###### '):
         return 'h6'
 
-def get_block_tag(block):
-    type = block_to_block_type(block)
-    if type == BlockType.PARAGRAPH:
-        return 'p'
-    if type == BlockType.HEADING:
-        return get_heading_tag(block)
+def block_to_parent_node(md_block):
+    pass
 
 
 def text_to_child_node(text):
@@ -172,21 +144,4 @@ def markdown_to_html_node(markdown):
     md_blocks = markdown_to_blocks(markdown)
     html_nodes = []
 
-#Loop through Blocks and check for type and children.
-    for block in md_blocks:
-        children = []
-#Check for children by slicing down the block into text nodes.
-        text_blocks = text_to_textnodes(block)
-#If there are children. text_blocks list is > 1 if there are children.
-#If true, create a list of children (HTML LeafNodes)
-        if len(text_blocks) > 1:
-            for text in text_blocks:
-                child = text_to_child_node(text)
-                children.append(child)
-            html_nodes.append(ParentNode(
-#If there are no children, create a HTML LeafNode from the block.
-        node = block_to_leaf_node(block)
-        html_nodes.append(node)
-
-    return ParentNode('div', html_nodes)
 
