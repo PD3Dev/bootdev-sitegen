@@ -1,2 +1,5 @@
+import os
 def copy_static():
-    pass
+    print('Hello')
+    current_directory = os.listdir('.')
+    print (current_directory)
