@@ -134,7 +134,7 @@ def get_heading_tag(heading):
         return 'h6'
 
 def heading_to_parent_node(md_heading):
-    pass
+    children = []
 
 
 def text_to_children(text):
