@@ -15,13 +15,13 @@ class HTMLNode:
             prop_str = ""
 
             for key in keys:
-                prop_str += f'{key}="{self.props[key]}" '
+                prop_str += f' {key}="{self.props[key]}"'
             return prop_str
         else:
-            return None
+            return ''
 
     def __repr__(self):
-            print(f'HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})')
+            return f'HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})'
 
     def __eq__(self, other):
         if (self.tag == other.tag
@@ -42,11 +42,14 @@ class LeafNode(HTMLNode):
             raise ValueError("No content found")
         if self.tag == None:
             return str(self.value)
+        if self.tag == 'img':
+            return f'<{self.tag}{self.props_to_html()} />'
+
         
-        return f'<{self.tag}>{self.value}</{self.tag}>'
+        return f'<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>'
     
     def __repr__(self):
-         print(f'HTMLNode({self.tag}, {self.value}, {self.props})')
+         return f'LeafNode({self.tag}, {self.value}, {self.props})'
 
 class ParentNode(HTMLNode):
     def __init__(self, tag, children, props=None):
@@ -57,7 +60,7 @@ class ParentNode(HTMLNode):
             raise ValueError("HTML tag required")
         if self.children == None:
             raise ValueError("No child nodes")
-        html_str = f'<{self.tag}>'
+        html_str = f'<{self.tag}{self.props_to_html()}>'
 
 #Iterate over children and add them in between parent's HTML tag
         for child in self.children:

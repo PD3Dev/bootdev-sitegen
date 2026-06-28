@@ -22,7 +22,7 @@ class TestHTMLNode(unittest.TestCase):
     def test_proptohtml(self):
         htmlnode7 = HTMLNode("i", "some text", None, {"href": "google.de"})
         test_str = htmlnode7.props_to_html()
-        ctrl_str = 'href="google.de" '
+        ctrl_str = ' href="google.de"'
         self.assertEqual(test_str, ctrl_str)
 
     def test_leaf_to_html_p(self):
@@ -31,7 +31,7 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_leaf_to_html_p_w_link(self):
         node2 = LeafNode("a", "Hello, world!", {"href": "google.de"})
-        self.assertEqual(node2.to_html(), "<a>Hello, world!</a>")
+        self.assertEqual(node2.to_html(), '<a href="google.de">Hello, world!</a>')
 
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")

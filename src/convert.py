@@ -134,8 +134,44 @@ def get_heading_tag(heading):
         return 'h6'
 
 def heading_to_parent_node(md_heading):
-    children = []
+    children = text_to_children(md_heading)
+    return ParentNode(get_heading_tag(md_heading), children)
 
+def paragraph_to_parent_node(md_paragraph):
+    md_paragraph = md_paragraph.replace('\n', ' ')
+    children = text_to_children(md_paragraph)
+    return ParentNode('p', children)
+
+def quote_to_parent_node(md_quote):
+    children = text_to_children(md_quote)
+    return ParentNode('blockquote', children)
+
+def ul_to_parent_node(md_ul):
+    ul_children = []
+    list_items = md_ul.split('\n')
+    for item in list_items:
+        item = item[2:]
+        item_children = text_to_children(item)
+        ul_children.append(ParentNode('li', item_children))
+    return ParentNode('ul', ul_children)
+
+def ol_to_parent_node(md_ul):
+    ol_children = []
+    list_items = md_ul.split('\n')
+    for item in list_items:
+        split = item.split('.', 1)
+        item = split[1]
+        item = item.strip()
+        item_children = text_to_children(item)
+        ol_children.append(ParentNode('li', item_children))
+    return ParentNode('ol', ol_children)
+
+def code_to_parent_node(md_code):
+    text = md_code.strip('`')
+    text = text.lstrip()
+    code_text_node = TextNode(text, TextType.CODE)
+    child_html_node = [text_node_to_html_node(code_text_node)]
+    return ParentNode('pre', child_html_node)
 
 def text_to_children(text):
     tn_children = text_to_textnodes(text)
@@ -146,8 +182,22 @@ def text_to_children(text):
         html_children.append(child)
     return html_children
 
+
 def markdown_to_html_node(markdown):
     md_blocks = markdown_to_blocks(markdown)
     html_nodes = []
-
+    for block in md_blocks:
+        if block_to_block_type(block) == BlockType.HEADING:
+            html_nodes.append(heading_to_parent_node(block))
+        if block_to_block_type(block) == BlockType.CODE:
+            html_nodes.append(code_to_parent_node(block))
+        if block_to_block_type(block) == BlockType.PARAGRAPH:
+            html_nodes.append(paragraph_to_parent_node(block))
+        if block_to_block_type(block) == BlockType.QUOTE:
+            html_nodes.append(quote_to_parent_node(block))
+        if block_to_block_type(block) == BlockType.ORDERED_LIST:
+            html_nodes.append(ol_to_parent_node(block))
+        if block_to_block_type(block) == BlockType.UNORDERED_LIST:
+            html_nodes.append(ul_to_parent_node(block))
+    return ParentNode('div', html_nodes)
 
