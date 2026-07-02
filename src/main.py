@@ -5,6 +5,7 @@ from copystatic import copy_static, del_public
 def main():
 
     del_public()
+
     copy_static()
 
 if __name__ == "__main__":
