@@ -2,8 +2,9 @@ import os
 import shutil
 def del_public():
     shutil.rmtree('public/')
+    os.mkdir('public/')
 
-def copy_static():
+def copy_static(src, dest):
     print('Hello')
-    current_directory = os.listdir('.')
-    print (current_directory)
+    source_content = os.listdir('.')
+    print (source_content)

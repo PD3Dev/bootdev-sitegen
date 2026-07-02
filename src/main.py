@@ -6,7 +6,7 @@ def main():
 
     del_public()
 
-    copy_static()
+    copy_static('static/', 'public/')
 
 if __name__ == "__main__":
     main()
