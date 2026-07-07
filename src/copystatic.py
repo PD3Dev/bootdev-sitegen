@@ -5,6 +5,16 @@ def del_public():
     os.mkdir('public/')
 
 def copy_static(src, dest):
-    print('Hello')
-    source_content = os.listdir('.')
-    print (source_content)
+    source_content = os.listdir(src)
+#    print(f'Current source folder content: {source_content}')
+
+    for item in source_content:
+        if os.path.isfile(f'{src}{item}'):
+#            print(f'Copying: {src}{item}')
+            shutil.copy(f'{src}{item}', dest)
+        else:
+            new_src = f'{src}{item}/'
+            new_dest= f'{dest}{item}/'
+#            print(f'Creating: {new_dest}')
+            os.mkdir(new_dest)
+            copy_static(new_src, new_dest)
