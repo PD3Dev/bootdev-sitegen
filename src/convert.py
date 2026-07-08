@@ -258,8 +258,8 @@ def generate_pages_recursive(from_path, template_path, dest_path, basepath):
             #Replace title and html content in the template file and save it.
                 temp_content = temp_content.replace('{{ Title }}', page_title)
                 temp_content = temp_content.replace('{{ Content }}', html_str)
-                temp_content = temp_content.replace('href="/', 'href="{basepath}')
-                temp_content = temp_content.replace('src="/', 'src="{basepath}')
+                temp_content = temp_content.replace('href="/', f'href="{basepath}')
+                temp_content = temp_content.replace('src="/', f'src="{basepath}')
 
             #Write the final HTML file with updated template content.
                 filename = item.strip('.md')
