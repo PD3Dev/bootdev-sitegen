@@ -258,5 +258,38 @@ This is the same paragraph on a new line
             ],
         )
 
+    def test_extract_title(self):
+        title = extract_title('# This is a heading')
+        self.assertEqual(
+            title,
+            'This is a heading'
+        )
+
+    def test_extract_title_long(self):
+        title = extract_title('''
+# This is a heading
+
+# This second heading should not be detected.
+
+This is a normal paragraph.
+
+## Here is a second grade heading.
+
+[A link](http://google.de) for good measure.
+
+The end.
+'''
+                              )
+        self.assertEqual(
+            title,
+            'This is a heading'
+        )
+
+    def test_extract_title_fail(self):
+        title = extract_title('# This is a heading')
+        with self.assertRaises(Exception):
+            extract_title(title)
+
+
 if __name__ == "__main__":
     unittest.main()
