@@ -235,7 +235,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, mode='w') as html_file:
         html_file.write(temp_content)
 
-def generate_pages_recursive(from_path, template_path, dest_path):
+def generate_pages_recursive(from_path, template_path, dest_path, basepath):
 #List content of current directory
     content = os.listdir(from_path)
 
@@ -258,6 +258,8 @@ def generate_pages_recursive(from_path, template_path, dest_path):
             #Replace title and html content in the template file and save it.
                 temp_content = temp_content.replace('{{ Title }}', page_title)
                 temp_content = temp_content.replace('{{ Content }}', html_str)
+                temp_content = temp_content.replace('href="/', 'href="{basepath}')
+                temp_content = temp_content.replace('src="/', 'src="{basepath}')
 
             #Write the final HTML file with updated template content.
                 filename = item.strip('.md')
@@ -269,4 +271,4 @@ def generate_pages_recursive(from_path, template_path, dest_path):
             nested_folder_path = f'{from_path}/{item}'
             new_dest_path = f'{dest_path}/{item}'
             os.mkdir(new_dest_path)
-            generate_pages_recursive(nested_folder_path, template_path, new_dest_path)
+            generate_pages_recursive(nested_folder_path, template_path, new_dest_path, basepath)

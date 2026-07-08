@@ -1,8 +1,8 @@
 import os
 import shutil
-def del_public():
-    shutil.rmtree('public/')
-    os.mkdir('public/')
+def del_docs():
+    shutil.rmtree('docs/')
+    os.mkdir('docs/')
 
 def copy_static(src, dest):
     source_content = os.listdir(src)
