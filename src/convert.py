@@ -2,6 +2,7 @@ from htmlnode import *
 from textnode import *
 from blocks import *
 import re
+import os
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     result_nodes = []
@@ -134,7 +135,9 @@ def get_heading_tag(heading):
         return 'h6'
 
 def heading_to_parent_node(md_heading):
-    children = text_to_children(md_heading)
+    split = md_heading.split('# ')
+    stripped = split[-1]
+    children = text_to_children(stripped)
     return ParentNode(get_heading_tag(md_heading), children)
 
 def paragraph_to_parent_node(md_paragraph):
@@ -143,7 +146,9 @@ def paragraph_to_parent_node(md_paragraph):
     return ParentNode('p', children)
 
 def quote_to_parent_node(md_quote):
-    children = text_to_children(md_quote)
+    text = md_quote.replace('>', '')
+    text = text.lstrip()
+    children = text_to_children(text)
     return ParentNode('blockquote', children)
 
 def ul_to_parent_node(md_ul):
@@ -207,3 +212,61 @@ def extract_title(markdown):
         if block.startswith('# '):
             return block.strip('# ')
     raise Exception('No title found')
+
+def generate_page(from_path, template_path, dest_path):
+    print(f'Generating page from {from_path} to {dest_path} using {template_path}.')
+#Read markdown and template and store contents in variables.
+    with open(from_path) as markdown:
+        md_content = markdown.read()
+
+    with open(template_path) as template:
+        temp_content = template.read()
+
+#Create the full HTML str from the markdown content and extract the page title.
+    html_node = markdown_to_html_node(md_content)
+    html_str = html_node.to_html()
+    page_title = extract_title(md_content)
+
+#Replace title and html content in the template file and save it.
+    temp_content = temp_content.replace('{{ Title }}', page_title)
+    temp_content = temp_content.replace('{{ Content }}', html_str)
+
+#Write the final HTML file with updated template content.
+    with open(dest_path, mode='w') as html_file:
+        html_file.write(temp_content)
+
+def generate_pages_recursive(from_path, template_path, dest_path):
+#List content of current directory
+    content = os.listdir(from_path)
+
+#Crawl through content to check for .md files
+    for item in content:
+        item_path = f'{from_path}/{item}'
+        if os.path.isfile(item_path):
+            if item.endswith('.md'):
+                with open(item_path) as markdown:
+                    md_content = markdown.read()
+
+                with open(template_path) as template:
+                    temp_content = template.read()
+
+            #Create the full HTML str from the markdown content and extract the page title.
+                html_node = markdown_to_html_node(md_content)
+                html_str = html_node.to_html()
+                page_title = extract_title(md_content)
+
+            #Replace title and html content in the template file and save it.
+                temp_content = temp_content.replace('{{ Title }}', page_title)
+                temp_content = temp_content.replace('{{ Content }}', html_str)
+
+            #Write the final HTML file with updated template content.
+                filename = item.strip('.md')
+                filename += '.html'
+                with open(f'{dest_path}/{filename}', mode='w') as html_file:
+                    html_file.write(temp_content)
+        else:
+#The item is a folder. Create new from and dest paths and recursivgely call the function.
+            nested_folder_path = f'{from_path}/{item}'
+            new_dest_path = f'{dest_path}/{item}'
+            os.mkdir(new_dest_path)
+            generate_pages_recursive(nested_folder_path, template_path, new_dest_path)
